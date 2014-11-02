@@ -12,6 +12,7 @@ from lib.utils import (check_network_status, create_pidfile, daemonize,
 from lib.worker import worker
 
 logger = logging.getLogger('redirect_checker')
+is_running = True
 
 
 def main_loop(config):
@@ -20,7 +21,7 @@ def main_loop(config):
             config.WORKER_POOL_SIZE, config.SLEEP
         ))
     parent_pid = os.getpid()
-    while True:
+    while is_running:
         if check_network_status(config.CHECK_URL, config.HTTP_TIMEOUT):
             required_workers_count = config.WORKER_POOL_SIZE - len(
                 active_children())
@@ -43,21 +44,22 @@ def main_loop(config):
 
 def main(argv):
     args = parse_cmd_args(argv[1:])
-
     if args.daemon:
         daemonize()
 
     if args.pidfile:
         create_pidfile(args.pidfile)
-
-    config = load_config_from_pyfile(
-        os.path.realpath(os.path.expanduser(args.config))
-    )
+    config = _load_config(args)
     dictConfig(config.LOGGING)
     main_loop(config)
 
     return config.EXIT_CODE
 
+
+def _load_config(args):
+    return load_config_from_pyfile(
+        os.path.realpath(os.path.expanduser(args.config))
+    )
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))

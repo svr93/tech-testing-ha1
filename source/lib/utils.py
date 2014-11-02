@@ -19,7 +19,6 @@ def daemonize():
 
     if pid == 0:
         os.setsid()
-
         try:
             pid = os.fork()
         except OSError as exc:
@@ -50,15 +49,18 @@ def load_config_from_pyfile(filepath):
     """
     cfg = Config()
 
-    variables = {}
-
-    execfile(filepath, variables)
+    variables = _execfile(filepath)
 
     for key, value in variables.iteritems():
         if key.isupper():
             setattr(cfg, key, value)
-
     return cfg
+
+
+def _execfile(filepath):
+    variables = {}
+    execfile(filepath, variables)
+    return variables
 
 
 def parse_cmd_args(args, app_description=''):
@@ -93,7 +95,6 @@ def parse_cmd_args(args, app_description=''):
         dest='pidfile',
         help='Path to pidfile.'
     )
-
     return parser.parse_args(args=args)
 
 

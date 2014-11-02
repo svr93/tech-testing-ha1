@@ -1,7 +1,8 @@
+# coding: utf
+
 import unittest
 import mock
 from notification_pusher import create_pidfile
-
 
 class NotificationPusherTestCase(unittest.TestCase):
     def test_create_pidfile_example(self):

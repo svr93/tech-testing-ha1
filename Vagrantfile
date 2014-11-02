@@ -13,4 +13,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     privileged: false,
     path: "provision/run.sh"
 
+  #config.vm.provider :virtualbox do |vb|
+  #  vb.gui = true
+  #end
+  config.vm.boot_timeout = 100000
+
 end
